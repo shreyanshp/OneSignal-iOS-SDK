@@ -53,6 +53,8 @@
 #import "OSObservable.h"
 #import "OSPendingCallbacks.h"
 
+#import "OSNotificationsManager.h"
+
 #import <stdlib.h>
 #import <stdio.h>
 #import <sys/types.h>
@@ -145,7 +147,7 @@ static OSFailureBlock pendingGetTagsFailureBlock;
 static BOOL registeredWithApple = NO;
 
 // UIApplication-registerForRemoteNotifications has been called but a success or failure has not triggered yet.
-static BOOL waitingForApnsResponse = false;
+static BOOL waitingForApnsResponse = false; // moved 🔔
 
 // Under Capabilities is "Background Modes" > "Remote notifications" enabled.
 static BOOL backgroundModesEnabled = false;
@@ -198,8 +200,8 @@ static NSString *pendingExternalUserId;
 static NSString *pendingExternalUserIdHashToken;
 
 // iOS version implementation
-static NSObject<OneSignalNotificationSettings> *_osNotificationSettings;
-+ (NSObject<OneSignalNotificationSettings> *)osNotificationSettings {
+static NSObject<OneSignalNotificationSettings> *_osNotificationSettings; // moved 🔔
++ (NSObject<OneSignalNotificationSettings> *)osNotificationSettings { // moved 🔔
     if (!_osNotificationSettings) {
         if ([OneSignalHelper isIOSVersionGreaterThanOrEqual:@"10.0"]) {
             _osNotificationSettings = [OneSignalNotificationSettingsIOS10 new];
@@ -211,8 +213,8 @@ static NSObject<OneSignalNotificationSettings> *_osNotificationSettings;
 }
 
 // static property def for currentPermissionState
-static OSPermissionState* _currentPermissionState;
-+ (OSPermissionState*)currentPermissionState {
+static OSPermissionState* _currentPermissionState; // moved 🔔
++ (OSPermissionState*)currentPermissionState { // moved 🔔
     if (!_currentPermissionState) {
         _currentPermissionState = [OSPermissionState alloc];
         _currentPermissionState = [_currentPermissionState initAsTo];
@@ -223,8 +225,8 @@ static OSPermissionState* _currentPermissionState;
 }
 
 // static property def for previous OSSubscriptionState
-static OSPermissionState* _lastPermissionState;
-+ (OSPermissionState*)lastPermissionState {
+static OSPermissionState* _lastPermissionState; // moved 🔔
++ (OSPermissionState*)lastPermissionState { // moved 🔔
     if (!_lastPermissionState)
         _lastPermissionState = [[OSPermissionState alloc] initAsFrom];
     return _lastPermissionState;
@@ -504,7 +506,7 @@ static OneSignalOutcomeEventsController *_outcomeEventsController;
     mSDKType = type;
 }
 
-+ (void)setWaitingForApnsResponse:(BOOL)value {
++ (void)setWaitingForApnsResponse:(BOOL)value { // moved 🔔
     waitingForApnsResponse = value;
 }
 
@@ -599,6 +601,24 @@ static OneSignalOutcomeEventsController *_outcomeEventsController;
 + (void)logout {
     [OneSignalUserManagerImpl logout];
 }
+
+#pragma mark User Model - Notifications namespace 🔥
++ (Class<OSNotifications>)Notifications {
+    return OSNotificationsManager.Notifications;
+}
+
+// This method is here because OneSignal.h is not able to resolve OSNotificationsManager, OSNotificationsNamespace
++ (void)temporaryTestMethod {
+    [OneSignal.Notifications requestPermission:^(BOOL accepted) {
+        NSLog(@"🔥 promptForPushNotificationsWithUserResponse: %d", accepted);
+    }];
+
+    [OneSignal.Notifications requestPermission:^(BOOL accepted) {
+        NSLog(@"🔥 promptForPushNotificationsWithUserResponse: %d", accepted);
+    } fallbackToSettings:true];
+}
+
+// ============================================================================================== //
 
 /*
  1/2 steps in OneSignal init, relying on setLaunchOptions (usage order does not matter)
@@ -987,7 +1007,7 @@ static OneSignalOutcomeEventsController *_outcomeEventsController;
 }
 
 //presents the settings page to control/customize push notification settings
-+ (void)presentAppSettings {
++ (void)presentAppSettings {  // moved 🔔 OSNotificationsManager.m
     
     //only supported in 10+
     if ([OneSignalHelper isIOSVersionLessThan:@"10.0"])

@@ -298,6 +298,10 @@ typedef void (^OSFailureBlock)(NSError* error);
 NS_SWIFT_NAME(login(externalId:token:));
 + (void)logout;
 
+#pragma mark User Model - Notifications namespace 🔥
++ (void)temporaryTestMethod;
+// + (Class<OSNotificationsNamespace>)Notifications;
+
 #pragma mark Initialization
 + (void)setAppId:(NSString* _Nonnull)newAppId; // TODO: UM renamed to just 1 method: initialize()
 + (void)initWithLaunchOptions:(NSDictionary* _Nullable)launchOptions;
@@ -309,10 +313,10 @@ NS_SWIFT_NAME(login(externalId:token:));
 + (void)onesignalLog:(ONE_S_LOG_LEVEL)logLevel message:(NSString* _Nonnull)message;
 
 #pragma mark Prompt For Push
-typedef void(^OSUserResponseBlock)(BOOL accepted);
+typedef void(^OSUserResponseBlock)(BOOL accepted); // moved 🔔
 
-+ (void)promptForPushNotificationsWithUserResponse:(OSUserResponseBlock)block;
-+ (void)promptForPushNotificationsWithUserResponse:(OSUserResponseBlock)block fallbackToSettings:(BOOL)fallback;
++ (void)promptForPushNotificationsWithUserResponse:(OSUserResponseBlock)block; // moved 🔔
++ (void)promptForPushNotificationsWithUserResponse:(OSUserResponseBlock)block fallbackToSettings:(BOOL)fallback; // moved 🔔
 + (void)registerForProvisionalAuthorization:(OSUserResponseBlock)block;
 + (OSDeviceState*)getDeviceState;
 
